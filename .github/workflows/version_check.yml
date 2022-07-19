@@ -15,5 +15,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: check release version
+        env:
+          RELEASE_VERSION: ${{github.event.inputs.version}}
         run: |
           ./job_summary.sh
