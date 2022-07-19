@@ -1,0 +1,17 @@
+name: version check
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: release tag
+        type: string
+        required: true
+
+jobs:
+  version_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check release version
+        run: |
+          echo ${{github.event.inputs.version}} >> $GITHUB_STEP_SUMMARY
