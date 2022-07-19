@@ -12,6 +12,8 @@ jobs:
   version_check:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v3
       - name: check release version
         run: |
-          echo ${{github.event.inputs.version}} >> $GITHUB_STEP_SUMMARY
+          ./job_summary.sh
