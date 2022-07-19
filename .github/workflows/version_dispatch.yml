@@ -2,7 +2,9 @@ name: version dispatch
 
 on:
   release:
-    types: [published,released]
+    types:
+      - released
+      - created
 
 jobs:
   version_dispatch:
