@@ -25,6 +25,7 @@ jobs:
           for file in $files; do
             echo $file
             sed -i "s/\(^.*targetRevision: \)\(.*\)/\1${RELEASE_VERSION}/g" $file
+            git stage $file
             git commit -m "Updated ${file} with target revision ${RELEASE_VERSION}"
             git push origin update/argo-tooling-$RELEASE_VERSION -u
           done
