@@ -36,13 +36,12 @@ jobs:
           RELEASE_VERSION: ${{github.event.inputs.version}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              head: "update/argo-tooling-${RELEASE_VERSION}",
+              head: "update/argo-tooling-${{env.RELEASE_VERSION}}",
               base: "main",
-              title: "update/ArgoCd-tooling-release-${RELEASE_VERSION}",
-              body: "Updating to ${RELEASE_VERSION} from bip-tooling-argocd release"
+              title: "update/ArgoCd-tooling-release-${{env.RELEASE_VERSION}}",
+              body: "Updating to ${{env.RELEASE_VERSION}} from bip-tooling-argocd release"
             });
