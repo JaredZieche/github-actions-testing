@@ -18,4 +18,25 @@ jobs:
         env:
           RELEASE_VERSION: ${{github.event.inputs.version}}
         run: |
-          ./job_summary.sh
+          git checkout -b update/argo-tooling-$RELEASE_VERSION
+          files=$(find . -name "argocd-bootstrap*" |grep -v defaults)
+          for file in $files; do
+            echo $file
+            sed -i '' -e "s/\(^.*targetRevision: \)\(.*\)/\1${RELEASE_VERSION}/g" $file
+            git commit -m "Updated ${file} with target revision ${RELEASE_VERSION}"
+          done
+
+      - name: submit pr
+        uses: actions/github-script@v6
+        env:
+          RELEASE_VERSION: ${{github.event.inputs.version}}
+        with:
+          script: |
+            github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.owner,
+              head: "update/argo-tooling-${RELEASE_VERSION}",
+              base: "main",
+              title: "update/ArgoCd-tooling-release-${RELEASE_VERSION}",
+              body: "Updating to ${RELEASE_VERSION} from bip-tooling-argocd release"
+            });

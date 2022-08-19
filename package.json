@@ -1,0 +1,24 @@
+{
+  "name": "github-actions-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaredZieche/github-actions-testing.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JaredZieche/github-actions-testing/issues"
+  },
+  "homepage": "https://github.com/JaredZieche/github-actions-testing#readme",
+  "dependencies": {
+    "@actions/core": "^1.9.0",
+    "graphql": "^16.5.0",
+    "octokit": "^2.0.4"
+  }
+}
