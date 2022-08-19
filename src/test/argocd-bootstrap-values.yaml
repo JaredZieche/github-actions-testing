@@ -6,10 +6,10 @@ global:
     legacy: sbx8.bip.va.gov
 
 projects:
-  targetRevision: 1.5.0
+  targetRevision: 1.5.2
 
 apps:
-  targetRevision: 1.5.0
+  targetRevision: 1.5.2
 
 argocd:
   server:
