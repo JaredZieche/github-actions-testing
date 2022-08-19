@@ -22,8 +22,9 @@ jobs:
           files=$(find . -name "argocd-bootstrap*" |grep -v defaults)
           for file in $files; do
             echo $file
-            sed -i '' -e "s/\(^.*targetRevision: \)\(.*\)/\1${RELEASE_VERSION}/g" $file
+            sed -i "s/\(^.*targetRevision: \)\(.*\)/\1${RELEASE_VERSION}/g" $file
             git commit -m "Updated ${file} with target revision ${RELEASE_VERSION}"
+            git push origin update/argo-tooling-$RELEASE_VERSION -u
           done
 
       - name: submit pr
