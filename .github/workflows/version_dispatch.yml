@@ -7,10 +7,12 @@ on:
 jobs:
   release_version_dispatch:
     runs-on: ubuntu-latest
+    environment: test
     steps:
       - name: trigger workflow dispatch
         uses: actions/github-script@v6
         with:
+          github-token: ${{secrets.DISPATCH_TOKEN}}
           script: |
             github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
