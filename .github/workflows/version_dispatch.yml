@@ -7,18 +7,17 @@ on:
 jobs:
   release_version_dispatch:
     runs-on: ubuntu-latest
-    environment: ${{inputs.gh_env}}
     steps:
       - name: trigger workflow dispatch
         uses: actions/github-script@v6
         with:
           script: |
             github.rest.actions.createWorkflowDispatch({
-              owner: "department-of-veterans-affairs",
-              repo: ${{inputs.github_repo}},
-              workflow_id: ${{inputs.workflow_id}},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "30516147",
               ref: "main",
               inputs: {
-                release_version: ${{inputs.release_version}}
+                release_version: ${{github.event.release.release_id}}
               }
             })
