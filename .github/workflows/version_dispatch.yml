@@ -18,6 +18,6 @@ jobs:
               workflow_id: "30516147",
               ref: "main",
               inputs: {
-                release_version: "${{github.event.release.release_id}}"
+                version: "${{github.event.release.release_id}}"
               }
             })
