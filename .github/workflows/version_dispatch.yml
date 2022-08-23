@@ -17,8 +17,8 @@ jobs:
               owner: "department-of-veterans-affairs",
               repo: ${{inputs.github_repo}},
               workflow_id: ${{inputs.workflow_id}},
-              ref: "master",
+              ref: "main",
               inputs: {
-                release_version: ${{inputs.release_version}},
+                release_version: ${{inputs.release_version}}
               }
             })
