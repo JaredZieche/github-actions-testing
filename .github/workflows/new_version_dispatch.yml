@@ -47,7 +47,7 @@ jobs:
     with:
       gh_env: ${{github.event.inputs.gh_env}}
       release_version: ${{github.event.inputs.release_version}}
-      branch_name: ${{github.event.inputs.branch_name}}
+      branch_prefix: ${{github.event.inputs.branch_name}}
       search_path: ${{github.event.inputs.search_path}}
       file_pattern: ${{github.event.inputs.file_pattern}}
       search_pattern: ${{github.event.inputs.search_pattern}}
