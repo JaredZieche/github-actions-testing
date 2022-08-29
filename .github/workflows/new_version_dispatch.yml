@@ -45,6 +45,7 @@ jobs:
   new_release_version_check:
     uses: ./.github/workflows/new_version_check.yml
     with:
+      gh_env: ${{github.event.inputs.gh_env}}
       release_version: ${{github.event.inputs.release_version}}
       branch_name: ${{github.event.inputs.branch_name}}
       search_path: ${{github.event.inputs.search_path}}
