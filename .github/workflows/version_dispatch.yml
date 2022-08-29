@@ -17,9 +17,9 @@ jobs:
             github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: "version_check.yml",
+              workflow_id: "new_version_check.yml",
               ref: "main",
               inputs: {
-                version: "${{github.event.release.tag_name}}"
+                release_version: "${{github.event.release.tag_name}}"
               }
             })

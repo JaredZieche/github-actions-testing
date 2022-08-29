@@ -1,0 +1,145 @@
+name: release version check
+
+on:
+  workflow_call:
+    inputs:
+      gh_env:
+        description: github environment to deploy from
+        type: string
+        required: true
+      release_version:
+        description: release tag from github repo published release
+        type: string
+        required: true
+      branch_name:
+        description: name of new branch to create for changes
+        type: string
+        required: true
+      search_path:
+        description: path in which to search for files
+        type: string
+        required: true
+      file_pattern:
+        description: pattern against which to mach file names
+        type: string
+        required: true
+      string_pattern:
+        description: pattern against which to match a string within a matched file
+        type: string
+        required: true
+    secrets:
+      GH_SVC_TOKEN:
+        required: true
+      GH_SVC_USER:
+        required: true
+
+jobs:
+  release_version_check:
+    runs-on: ubuntu-latest
+    environment: ${{inputs.gh_env}}
+    steps:
+      - name: Check if branch exists
+        id: ref_check
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GH_SVC_TOKEN}}
+          script: |
+            const new_branch = "${{inputs.branch_prefix}}-${{inputs.release_version}}"
+            const branch_exists = github.rest.git.listMatchingRefs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: $new_branch
+            })
+
+            if (branch_exists === []) {
+              github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: $new_branch
+              })
+            }
+
+          # git checkout -b feature/${{inputs.branch_prefix}}-${{inputs.release_version}}
+          # git config user.name ${{secrets.GH_SVC_USER}}
+          # echo "::set-output name=NEW_BRANCH::${{inputs.branch_name}}-${{inputs.release_version}}"
+
+      - name: "Checkout ${{inputs.branch_prefix}}-${{inputs.release_version}}"
+        id: checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{secrets.GH_SVC_TOKEN}}
+          ref: "${{inputs.branch_prefix}}-${{inputs.release_version}}"
+
+      - name: Check terragrunt.hcl module source versions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SVC_TOKEN }}
+          RELEASE_VERSION: ${{inputs.release_version}}
+          SEARCH_PATH: ${{inputs.search_path}}
+          FILE_PATTERN: ${{inputs.file_pattern}}
+          STRING_PATTERN: ${{inputs.string_pattern}}
+        run: |
+          files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}")
+          for file in $files; do
+            echo $file
+            sed -i -Ez "s/(^.*source\s*=\s*\".*$STRING_PATTERN\?ref=)([ A-Za-z0-9_./-]*\")/\1$RELEASE_VERSION\"/" $file
+          done
+
+      - name: Check argocd tooling version bootstrap release version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SVC_TOKEN }}
+          RELEASE_VERSION: ${{inputs.release_version}}
+          SEARCH_PATH: ${{inputs.search_path}}
+          FILE_PATTERN: ${{inputs.file_pattern}}
+          STRING_PATTERN: ${{inputs.string_pattern}}
+        run: |
+          files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}" |grep -v defaults)
+          for file in $files; do
+            echo $file
+            sed -i -Ez "s/(^.*${STRING_PATTERN} )(.*)/\1${RELEASE_VERSION}/g" $file
+          done
+
+      - name: Check argocd terragrunt tool_config bootstrap release version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SVC_TOKEN }}
+          RELEASE_VERSION: ${{inputs.release_version}}
+          SEARCH_PATH: ${{inputs.search_path}}
+          FILE_PATTERN: ${{inputs.file_pattern}}
+          STRING_PATTERN: ${{inputs.string_pattern}}
+        run: |
+          files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}")
+          for file in $files; do
+            echo $file
+            sed -i -Ez "s/(name\s*=\s*\"$STRING_PATTERN\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")/\1\"$RELEASE_VERSION\"/" $file
+          done
+
+      - name: Stage changes and push to upstream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SVC_TOKEN }}
+          RELEASE_VERSION: ${{inputs.release_version}}
+          SEARCH_PATH: ${{inputs.search_path}}
+          FILE_PATTERN: ${{inputs.file_pattern}}
+          STRING_PATTERN: ${{inputs.string_pattern}}
+        run: |
+          files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}" |grep -v defaults)
+          for file in $files; do
+            git stage $file
+            git commit -m "Updated ${file} with target revision ${RELEASE_VERSION}"
+            git push origin ${{steps.newbranch.outputs.NEW_BRANCH}} -u
+          done
+
+      - name: Create PR
+        uses: actions/github-script@v6
+        env:
+          RELEASE_VERSION: ${{inputs.release_version}}
+          BRANCH_NAME: ${{inputs.branch_name}}
+        with:
+          github-token: ${{secrets.GH_SVC_TOKEN}}
+          script: |
+            github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: "${{steps.checkout.outputs.NEW_BRANCH}}",
+              base: "master",
+              title: "${{steps.checkout.outputs.NEW_BRANCH}}",
+              body: "This is an automated PR for updating to ${{env.RELEASE_VERSION}} from github release"
+            });
