@@ -54,7 +54,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: get_branch
-              })
+              });
             }
 
             catch(err) {
@@ -63,11 +63,7 @@ jobs:
                 repo: context.repo.repo,
                 ref: new_branch,
                 sha: context.sha
-              })
-            }
-
-            finally {
-              return \\ branch already exists
+              });
             }
 
           # git checkout -b feature/${{inputs.branch_prefix}}-${{inputs.release_version}}
