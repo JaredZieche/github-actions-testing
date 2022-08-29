@@ -11,7 +11,7 @@ on:
         description: release tag from github repo published release
         type: string
         required: true
-      branch_name:
+      branch_prefix:
         description: name of new branch to create for changes
         type: string
         required: true
@@ -23,7 +23,11 @@ on:
         description: pattern against which to mach file names
         type: string
         required: true
-      string_pattern:
+      search_pattern:
+        description: pattern against which to match a string within a matched file
+        type: string
+        required: true
+      replace_pattern:
         description: pattern against which to match a string within a matched file
         type: string
         required: true
@@ -62,6 +66,9 @@ jobs:
           # git checkout -b feature/${{inputs.branch_prefix}}-${{inputs.release_version}}
           # git config user.name ${{secrets.GH_SVC_USER}}
           # echo "::set-output name=NEW_BRANCH::${{inputs.branch_name}}-${{inputs.release_version}}"
+            # sed -i -Ez "s/(^.*source\s*=\s*\".*$STRING_PATTERN\?ref=)([ A-Za-z0-9_./-]*\")/\1$RELEASE_VERSION\"/" $file
+            # sed -i -Ez "s/(^.*${STRING_PATTERN} )(.*)/\1${RELEASE_VERSION}/g" $file
+            # sed -i -Ez "s/(name\s*=\s*\"$STRING_PATTERN\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")/\1\"$RELEASE_VERSION\"/" $file
 
       - name: "Checkout ${{inputs.branch_prefix}}-${{inputs.release_version}}"
         id: checkout
@@ -81,35 +88,7 @@ jobs:
           files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}")
           for file in $files; do
             echo $file
-            sed -i -Ez "s/(^.*source\s*=\s*\".*$STRING_PATTERN\?ref=)([ A-Za-z0-9_./-]*\")/\1$RELEASE_VERSION\"/" $file
-          done
-
-      - name: Check argocd tooling version bootstrap release version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_SVC_TOKEN }}
-          RELEASE_VERSION: ${{inputs.release_version}}
-          SEARCH_PATH: ${{inputs.search_path}}
-          FILE_PATTERN: ${{inputs.file_pattern}}
-          STRING_PATTERN: ${{inputs.string_pattern}}
-        run: |
-          files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}" |grep -v defaults)
-          for file in $files; do
-            echo $file
-            sed -i -Ez "s/(^.*${STRING_PATTERN} )(.*)/\1${RELEASE_VERSION}/g" $file
-          done
-
-      - name: Check argocd terragrunt tool_config bootstrap release version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_SVC_TOKEN }}
-          RELEASE_VERSION: ${{inputs.release_version}}
-          SEARCH_PATH: ${{inputs.search_path}}
-          FILE_PATTERN: ${{inputs.file_pattern}}
-          STRING_PATTERN: ${{inputs.string_pattern}}
-        run: |
-          files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}")
-          for file in $files; do
-            echo $file
-            sed -i -Ez "s/(name\s*=\s*\"$STRING_PATTERN\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")/\1\"$RELEASE_VERSION\"/" $file
+            sed -i -Ez "s/$SEARCH_PATTERN/$REPLACE_PATTERN/" $file
           done
 
       - name: Stage changes and push to upstream

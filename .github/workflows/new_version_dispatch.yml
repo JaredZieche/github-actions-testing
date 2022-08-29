@@ -1,0 +1,54 @@
+name: release version check
+
+on:
+  workflow_dispatch:
+    inputs:
+      gh_env:
+        description: github environment to deploy from
+        type: string
+        required: true
+        default: test
+      release_version:
+        description: release tag from github repo published release
+        type: string
+        required: true
+      branch_prefix:
+        description: name of new branch to create for changes
+        type: string
+        required: true
+        default: testing
+      search_path:
+        description: path in which to search for files
+        type: string
+        required: true
+        deafult: "."
+      file_pattern:
+        description: pattern against which to mach file names
+        type: string
+        required: true
+        default: "terragrunt.hcl"
+      search_pattern:
+        description: pattern against which to match a string within a matched file
+        type: string
+        required: true
+        defult: (name\s*=\s*\"kubecost\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")
+      replace_pattern:
+        description: pattern against which to match a string within a matched file
+        type: string
+        required: true
+        defult: \1testing"
+
+            # sed -i -Ez "s/(^.*source\s*=\s*\".*$STRING_PATTERN\?ref=)([ A-Za-z0-9_./-]*\")/\1$RELEASE_VERSION\"/" $file
+            # sed -i -Ez "s/(^.*${STRING_PATTERN} )(.*)/\1${RELEASE_VERSION}/g" $file
+            # sed -i -Ez "s/(name\s*=\s*\"$STRING_PATTERN\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")/\1\"$RELEASE_VERSION\"/" $file
+jobs:
+  new_release_version_check:
+    uses: ./new_version_dispatch.yml
+    with:
+      release_version: ${{github.event.inputs.release_version}}
+      branch_name: ${{github.event.inputs.branch_name}}
+      search_path: ${{github.event.inputs.search_path}}
+      file_pattern: ${{github.event.inputs.file_pattern}}
+      search_pattern: ${{github.event.inputs.search_pattern}}
+      replace_pattern: ${{github.event.inputs.replace_pattern}}
+    secrets: inherit
