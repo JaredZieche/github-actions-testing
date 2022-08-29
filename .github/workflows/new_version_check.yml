@@ -50,7 +50,7 @@ jobs:
             const branch_exists = github.rest.git.listMatchingRefs({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: $new_branch
+              ref: new_branch
             })
 
             if (branch_exists === []) {
