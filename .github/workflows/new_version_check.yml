@@ -43,8 +43,6 @@ jobs:
       - name: Check if branch exists
         id: ref_check
         uses: actions/github-script@v6
-        env:
-          SHA: ${{env.parentSHA}}
         with:
           github-token: ${{secrets.GH_SVC_TOKEN}}
           script: |
@@ -60,14 +58,14 @@ jobs:
 
             const branch_exists = await github.paginate(branches)
 
-            console.log(branch_exists)
+            console.log(branch_exists.response)
 
-            if (!branch_exists.ref) {
+            if (branch_exists.repsonse != 200) {
               github.rest.git.createRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: new_branch,
-                sha: `${SHA}`
+                sha: context.ref
               })
             }
 
