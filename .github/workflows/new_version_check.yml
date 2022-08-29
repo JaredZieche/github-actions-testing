@@ -48,11 +48,11 @@ jobs:
         with:
           github-token: ${{secrets.GH_SVC_TOKEN}}
           script: |
-            const new_branch = "refs/heads/${{inputs.branch_prefix}}-${{inputs.release_version}}"
+            const new_branch = "heads/${{inputs.branch_prefix}}-${{inputs.release_version}}"
 
             const {SHA} = process.env
 
-            const branches = github.rest.git.listMatchingRefs({
+            const branches = github.rest.git.getRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: new_branch
@@ -62,7 +62,7 @@ jobs:
 
             console.log(branch_exists)
 
-            if (branch_exists === []) {
+            if (!branch_exists.ref) {
               github.rest.git.createRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
