@@ -48,14 +48,16 @@ jobs:
         with:
           github-token: ${{secrets.GH_SVC_TOKEN}}
           script: |
-            console.log(context)
             const new_branch = "refs/heads/${{inputs.branch_prefix}}-${{inputs.release_version}}"
+
             const {SHA} = process.env
+
             const branches = github.rest.git.listMatchingRefs({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: new_branch
             })
+
             const branch_exists = await github.paginate(branches)
 
             console.log(branch_exists)
