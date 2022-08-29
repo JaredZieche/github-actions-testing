@@ -59,19 +59,13 @@ jobs:
             console.log(branch_exists)
 
             if (branch_exists === []) {
-              continue
+              github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: new_branch,
+                sha: `${SHA}`
+              })
             }
-
-            if (branch_exists != []) {
-              return // branch already exists
-            }
-
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: new_branch,
-              sha: `${SHA}`
-            })
 
           # git checkout -b feature/${{inputs.branch_prefix}}-${{inputs.release_version}}
           # git config user.name ${{secrets.GH_SVC_USER}}
