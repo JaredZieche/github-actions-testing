@@ -43,7 +43,7 @@ on:
             # sed -i -Ez "s/(name\s*=\s*\"$STRING_PATTERN\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")/\1\"$RELEASE_VERSION\"/" $file
 jobs:
   new_release_version_check:
-    uses: ./new_version_dispatch.yml
+    uses: .github/workflows/new_version_check.yml
     with:
       release_version: ${{github.event.inputs.release_version}}
       branch_name: ${{github.event.inputs.branch_name}}
