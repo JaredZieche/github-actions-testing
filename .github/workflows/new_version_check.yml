@@ -34,8 +34,6 @@ on:
     secrets:
       GH_SVC_TOKEN:
         required: true
-      GH_SVC_USER:
-        required: true
 
 jobs:
   release_version_check:

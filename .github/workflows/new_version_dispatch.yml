@@ -1,4 +1,4 @@
-name: release version check
+name: new release version check
 
 on:
   workflow_dispatch:
