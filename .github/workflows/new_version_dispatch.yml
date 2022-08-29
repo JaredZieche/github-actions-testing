@@ -21,7 +21,7 @@ on:
         description: path in which to search for files
         type: string
         required: true
-        deafult: "."
+        default: "."
       file_pattern:
         description: pattern against which to mach file names
         type: string
@@ -31,12 +31,12 @@ on:
         description: pattern against which to match a string within a matched file
         type: string
         required: true
-        defult: (name\s*=\s*\"kubecost\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")
+        default: (name\s*=\s*\"kubecost\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")
       replace_pattern:
         description: pattern against which to match a string within a matched file
         type: string
         required: true
-        defult: \1testing"
+        default: \1testing"
 
             # sed -i -Ez "s/(^.*source\s*=\s*\".*$STRING_PATTERN\?ref=)([ A-Za-z0-9_./-]*\")/\1$RELEASE_VERSION\"/" $file
             # sed -i -Ez "s/(^.*${STRING_PATTERN} )(.*)/\1${RELEASE_VERSION}/g" $file
