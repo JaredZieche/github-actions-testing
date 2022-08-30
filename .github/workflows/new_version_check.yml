@@ -58,7 +58,7 @@ jobs:
           files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}")
           for file in $files; do
             echo $file
-            sed -i -Ez "s/$SEARCH_PATTERN/$REPLACE_PATTERN/" $file
+            sed -i -Ez "s/${SEARCH_PATTERN}/${REPLACE_PATTERN}/" $file
           done
 
       - name: Stage changes and push to upstream
