@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: check if branch exists
         id: branch_check
-        uses: actions/checkout@v3
+        uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GH_SVC_TOKEN}}
           script: |
@@ -91,7 +91,6 @@ jobs:
             git config user.name ${{github.actor}}
             git stage $file
             git commit -m "Updated ${file} with target revision ${RELEASE_VERSION}"
-            git push origin ${{steps.newbranch.outputs.NEW_BRANCH}} -u
           done
 
       - name: Create PR
