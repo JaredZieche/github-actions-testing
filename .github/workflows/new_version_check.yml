@@ -40,10 +40,28 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{inputs.gh_env}}
     steps:
+      - name: check if branch exists
+        id: branch_check
+        uses: actions/checkout@v3
+        with:
+          github-token: ${{secrets.GH_SVC_TOKEN}}
+          script: |
+            const new_branch = "heads/${{inputs.branch_prefix}}-${{inputs.release_version}}"
+            const matching_branches = github.rest.git.listMatchingRefs({
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             ref: $new_branch
+            })
+            console.log(matching_branches.data.length)
+
+      - name: testing
+        run: echo ${{ steps.branch_check.stdout }}
+
       - name: "Checkout ${{inputs.branch_prefix}}-${{inputs.release_version}}"
         id: checkout
         uses: actions/checkout@v3
         with:
+          github-token: ${{secrets.GH_SVC_TOKEN}}
           token: ${{secrets.GH_SVC_TOKEN}}
 
       - name: Check terragrunt.hcl module source versions

@@ -1,8 +1,3 @@
 const octokit = new Octokit({
-  auth: 'personal-access-token123'
-})
-
-await octokit.request('GET /repos/{owner}/{repo}/releases', {
-  owner: 'OWNER',
-  repo: 'REPO'
-})
+  auth: `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`
+});
