@@ -70,6 +70,7 @@ jobs:
         run: |
           files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}" |grep -v defaults)
           for file in $files; do
+            git config user.name ${{github.actor}}
             git stage $file
             git commit -m "Updated ${file} with target revision ${RELEASE_VERSION}"
             git push origin ${{steps.newbranch.outputs.NEW_BRANCH}} -u
