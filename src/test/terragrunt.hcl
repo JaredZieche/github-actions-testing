@@ -109,7 +109,7 @@ inputs = {
     {
       name = "kubecost"
       enabled = "true"
-      revision = "1.5.0"
+      revision = testing"
     },
     {
       name = "metricsserver"
