@@ -57,7 +57,7 @@ jobs:
               });
             }
 
-            catch(err) {
+            catch(HttpError) {
               github.rest.git.createRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
