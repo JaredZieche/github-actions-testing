@@ -52,7 +52,8 @@ jobs:
           RELEASE_VERSION: ${{inputs.release_version}}
           SEARCH_PATH: ${{inputs.search_path}}
           FILE_PATTERN: ${{inputs.file_pattern}}
-          STRING_PATTERN: ${{inputs.string_pattern}}
+          SEARCH_PATTERN: ${{inputs.search_pattern}}
+          REPLACE_PATTERN: ${{inputs.replace_pattern}}
         run: |
           files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}")
           for file in $files; do
@@ -66,7 +67,6 @@ jobs:
           RELEASE_VERSION: ${{inputs.release_version}}
           SEARCH_PATH: ${{inputs.search_path}}
           FILE_PATTERN: ${{inputs.file_pattern}}
-          STRING_PATTERN: ${{inputs.string_pattern}}
         run: |
           files=$(find "${SEARCH_PATH}" -name "${FILE_PATTERN}" |grep -v defaults)
           for file in $files; do
