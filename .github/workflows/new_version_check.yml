@@ -40,45 +40,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{inputs.gh_env}}
     steps:
-      - name: Check if branch exists
-        id: ref_check
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{secrets.GH_SVC_TOKEN}}
-          script: |
-            const get_branch = "heads/${{inputs.branch_prefix}}-${{inputs.release_version}}"
-            const new_branch = "refs/heads/${{inputs.branch_prefix}}-${{inputs.release_version}}"
-
-            try {
-              github.rest.git.getRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: get_branch
-              });
-            }
-
-            catch(RequestError) {
-              github.rest.git.createRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: new_branch,
-                sha: context.sha
-              });
-            }
-
-          # git checkout -b feature/${{inputs.branch_prefix}}-${{inputs.release_version}}
-          # git config user.name ${{secrets.GH_SVC_USER}}
-          # echo "::set-output name=NEW_BRANCH::${{inputs.branch_name}}-${{inputs.release_version}}"
-            # sed -i -Ez "s/(^.*source\s*=\s*\".*$STRING_PATTERN\?ref=)([ A-Za-z0-9_./-]*\")/\1$RELEASE_VERSION\"/" $file
-            # sed -i -Ez "s/(^.*${STRING_PATTERN} )(.*)/\1${RELEASE_VERSION}/g" $file
-            # sed -i -Ez "s/(name\s*=\s*\"$STRING_PATTERN\"\n\s*enabled = \"true\"\n\s*revision = )(\"[0-9.a-z]*\")/\1\"$RELEASE_VERSION\"/" $file
-
       - name: "Checkout ${{inputs.branch_prefix}}-${{inputs.release_version}}"
         id: checkout
         uses: actions/checkout@v3
         with:
           token: ${{secrets.GH_SVC_TOKEN}}
-          ref: "${{inputs.branch_prefix}}-${{inputs.release_version}}"
 
       - name: Check terragrunt.hcl module source versions
         env:
@@ -120,8 +86,8 @@ jobs:
             github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              head: "${{steps.checkout.outputs.NEW_BRANCH}}",
-              base: "master",
+              head: context.head_ref
+              base: context.base_ref,
               title: "${{steps.checkout.outputs.NEW_BRANCH}}",
               body: "This is an automated PR for updating to ${{env.RELEASE_VERSION}} from github release"
             });
