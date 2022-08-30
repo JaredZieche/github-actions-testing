@@ -48,9 +48,9 @@ jobs:
           script: |
             const new_branch = "heads/${{inputs.branch_prefix}}-${{inputs.release_version}}"
             const matching_branches = github.rest.git.listMatchingRefs({
-             owner: context.repo.owner,
-             repo: context.repo.repo,
-             ref: $new_branch
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: $new_branch
             })
             console.log(matching_branches.data.length)
 

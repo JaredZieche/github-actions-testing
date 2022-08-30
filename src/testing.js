@@ -5,6 +5,17 @@ const octokit = new Octokit({
 });
 
 try {
+  const prs = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
+    owner: 'jaredzieche',
+    repo: 'github-actions-testing',
+    state: 'open'
+  })
+
+  const open_prs = await octokit.paginate(prs)
+
+  for (pr in open_prs) {
+    console.log(pr.title)
+  }
 
   const matching_refs = await octokit.request('GET /repos/{owner}/{repo}/git/matching-refs/{ref}', {
     owner: 'jaredzieche',
@@ -18,9 +29,3 @@ try {
 catch (error) {
   console.log(`${error.status}: ${error.response}`)
 }
-
-finally {
-  return matching_refs.data.length
-}
-
-
