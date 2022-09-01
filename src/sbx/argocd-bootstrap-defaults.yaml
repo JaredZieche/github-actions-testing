@@ -1,5 +1,5 @@
 global:
-  deployEnv: sbx
+  deployEnv: test
   legacyEnv: sbx8
   domains:
     standard: sbx.bip.va.gov
