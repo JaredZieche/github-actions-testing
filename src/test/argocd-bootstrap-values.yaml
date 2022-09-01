@@ -1,15 +1,15 @@
 global:
-  deployEnv: sbx
+  deployEnv: test
   legacyEnv: sbx8
   domains:
     standard: sbx.bip.va.gov
     legacy: sbx8.bip.va.gov
 
 projects:
-  targetRevision: 1.5.0
+  targetRevision: 1.5.1
 
 apps:
-  targetRevision: 1.5.0
+  targetRevision: 1.5.1
 
 argocd:
   server:
