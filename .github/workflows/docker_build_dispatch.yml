@@ -101,16 +101,14 @@ jobs:
             const array = matrix.include
             console.log(array)
             const cells = []
+            cells.push([{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}])
             for (let elements of array) {
               cells.push([ elements.name, elements.targets, elements.image ])
             }
             console.log(cells)
             await core.summary
               .addHeading('Build-Matrix')
-              .addTable([
-                [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                cells.every()
-              ])
+              .addTable(cells)
               .write()
 
   build:
