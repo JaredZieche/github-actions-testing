@@ -101,10 +101,8 @@ jobs:
             const array = matrix.include
             console.log(array)
             const cells = []
-            for (var element in array) {
-              element.replace('{', '[')
-              element.replace('}', ']')
-              cells.push(element)
+            for (let elements of array) {
+              cells.push( [ elements.name, elements.targets, elements.image ] )
             }
             console.log(cells)
             await core.summary
