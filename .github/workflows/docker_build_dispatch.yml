@@ -106,7 +106,6 @@ jobs:
                 array
               ])
               .write()
-            })
 
   build:
     needs: build-matrix
