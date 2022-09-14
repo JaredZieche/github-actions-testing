@@ -109,7 +109,7 @@ jobs:
               .addHeading('Build-Matrix')
               .addTable([
                 [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                cells.forEach(element => { element })
+                cells.every()
               ])
               .write()
 
