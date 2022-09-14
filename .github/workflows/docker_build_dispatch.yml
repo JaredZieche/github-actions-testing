@@ -99,15 +99,15 @@ jobs:
             core.setOutput('docker_context', dockerContext)
             core.setOutput('matrix', matrix)
             const array = matrix.include
-            await core.summary
-              .addHeading('Build-Matrix')
-              .addTable([
-                [{data: Context, header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                for (let elements of array) {
+            for (let elements of array) {
+              await core.summary
+                .addHeading('Build-Matrix')
+                .addTable([
+                  [{data: Context, header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
                   [elements.dockerContext, elements.targets, elements.image],
-                }
-              ])
-              .write()
+                ])
+                .write()
+            }
 
   build:
     needs: build-matrix
