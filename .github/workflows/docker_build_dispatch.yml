@@ -98,13 +98,13 @@ jobs:
             console.log(matrix)
             core.setOutput('docker_context', dockerContext)
             core.setOutput('matrix', matrix)
-            const array = matrix.include
-            console.log(array)
+            const array = Object.values(matrix.include)
+            console.log(array[])
             await core.summary
               .addHeading('Build-Matrix')
               .addTable([
                 [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                $array
+                array
               ])
               .write()
 
