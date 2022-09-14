@@ -105,11 +105,12 @@ jobs:
               cells.push([ elements.name, elements.targets, elements.image ])
             }
             console.log(cells)
+            const newCells = JSON.parse(cells)
             await core.summary
               .addHeading('Build-Matrix')
               .addTable([
                 [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                JSON.parse(cells)
+                cells
               ])
               .write()
 
