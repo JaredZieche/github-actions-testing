@@ -104,7 +104,7 @@ jobs:
               .addHeading('Build-Matrix')
               .addTable([
                 [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                ${array}
+                $array
               ])
               .write()
 
