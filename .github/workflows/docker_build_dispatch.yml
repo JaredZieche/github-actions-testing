@@ -102,7 +102,7 @@ jobs:
             console.log(array)
             const cells = []
             for (let elements of array) {
-              cells.push( [ elements.name, elements.targets, elements.image ] )
+              cells.push(elements.name, elements.targets, elements.image)
             }
             console.log(cells)
             await core.summary
