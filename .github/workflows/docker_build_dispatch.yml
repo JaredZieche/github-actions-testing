@@ -102,12 +102,11 @@ jobs:
             console.log(array)
             const cells = []
             for (var element in array) {
-              for (var key in element) {
-                  if (element.hasOwnProperty(key)) {
-                      cells.push( [ key, element[key] ] );
-                  }
-              }
+              element.replace('{', '[')
+              element.replace('}', ']')
+              cells.push(element)
             }
+            console.log(cells)
             await core.summary
               .addHeading('Build-Matrix')
               .addTable([
