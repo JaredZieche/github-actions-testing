@@ -46,9 +46,10 @@ on:
 jobs:
   build-matrix:
     runs-on: ubuntu-latest
-    environment: vaec-bip-dev
+    environment: test
     outputs:
       docker_context: ${{steps.paths.outputs.docker_context}}
+      matrix: ${{steps.paths.outputs.matrix}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
