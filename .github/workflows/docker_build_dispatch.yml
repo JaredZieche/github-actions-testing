@@ -104,7 +104,7 @@ jobs:
             for (let elements of array) {
               cells.push([ elements.name, elements.targets, elements.image ])
             }
-            const newCells = cells.values()
+            const newCells = cells.forEach(element)
             console.log(newCells)
             await core.summary
               .addHeading('Build-Matrix')
