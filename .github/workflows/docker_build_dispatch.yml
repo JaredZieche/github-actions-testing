@@ -104,13 +104,12 @@ jobs:
             for (let elements of array) {
               cells.push([ elements.name, elements.targets, elements.image ])
             }
-            const newCells = cells.forEach(element => console.log(element))
-            console.log(newCells)
+            console.log(cells)
             await core.summary
               .addHeading('Build-Matrix')
               .addTable([
                 [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                newCells
+                cells.forEach(element => console.log(element))
               ])
               .write()
 
