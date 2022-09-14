@@ -103,7 +103,7 @@ jobs:
               await core.summary
                 .addHeading('Build-Matrix')
                 .addTable([
-                  [{data: Context, header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
+                  [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
                   [elements.dockerContext, elements.targets, elements.image],
                 ])
                 .write()
