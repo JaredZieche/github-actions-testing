@@ -35,6 +35,7 @@ try {
   // const globber = await glob.create(patterns.join('\n'))
   // const globs = await globber.glob()
   // console.log(globs)
+  const dirs = []
   for (const pr of prs) {
     console.log(pr.number)
     const files = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/files', {
@@ -52,14 +53,28 @@ try {
     }
   }
 
-  let dirs = [...new Set(filenames)]
-  console.log(dirs)
-  for (const dir of dirs) {
-    const config = `${dir}/config.json`
-    fetch(config)
-      .then((response) => response.json())
-      .then((json) => console.log(json))
+  let newdirs = [...new Set(dirs)]
+  console.log(newdirs)
+  const matrix = {};
+  matrix.include = []
+  for (const dir of newdirs) {
+    const configFile = `/Users/jaredzieche/github-actions-testing/${dir}/config.json`
+    console.log(configFile)
+    const config = fs.readFileSync(configFile, 'utf8')
+    console.log(config)
+    let obj = JSON.parse(config)
+    for ( const target of obj.targets) {
+      matrix.include.push({
+        name: dir,
+        targets: target,
+        image: `${obj.image["name"]}:${obj.image["tag"]}`
+      })
+    }
+    // matrix.include.push(`"targets": "${obj.targets}" }`)
   }
+  console.log(matrix)
+  const matrixYaml = yaml.dump(matrix)
+  console.log(matrixYaml)
 
     // console.log(files)
     // for (const file of files.data) {
