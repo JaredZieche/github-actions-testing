@@ -118,7 +118,7 @@ jobs:
       docker_context: ${{matrix.docker_context}}
 
   promote:
-    needs: [build-matrix]
+    needs: [build-matrix, build]
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
