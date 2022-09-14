@@ -100,7 +100,7 @@ jobs:
             core.setOutput('matrix', matrix)
             const array = matrix.include
             console.log(array)
-            const cells = []
+            const cells = {}
             for (let elements of array) {
               cells.push([ elements.name, elements.targets, elements.image ])
             }
@@ -110,7 +110,7 @@ jobs:
               .addHeading('Build-Matrix')
               .addTable([
                 [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                cells
+                newCells
               ])
               .write()
 
