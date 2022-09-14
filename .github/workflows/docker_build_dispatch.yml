@@ -99,13 +99,20 @@ jobs:
             core.setOutput('docker_context', dockerContext)
             core.setOutput('matrix', matrix)
             const array = matrix.include
-            const newArray = Object.values(array)
             console.log(array)
+            const cells = []
+            for (var element in array) {
+              for (var key in element) {
+                  if (element.hasOwnProperty(key)) {
+                      cells.push( [ key, element[key] ] );
+                  }
+              }
+            }
             await core.summary
               .addHeading('Build-Matrix')
               .addTable([
                 [{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}],
-                newArray
+                cells
               ])
               .write()
 
