@@ -99,7 +99,7 @@ jobs:
             core.setOutput('docker_context', dockerContext)
             core.setOutput('matrix', matrix)
             const array = Object.values(matrix.include)
-            console.log(array[])
+            console.log(array)
             await core.summary
               .addHeading('Build-Matrix')
               .addTable([
