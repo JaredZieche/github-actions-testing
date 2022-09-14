@@ -42,11 +42,6 @@ on:
         description: The context directory for the docker build
         type: string
         required: true
-    secrets:
-      IRON_BANK_USER:
-        required: true
-      IRON_BANK_PASSWORD:
-        required: true
 
 jobs:
   build-matrix:
@@ -62,7 +57,6 @@ jobs:
         id: paths
         uses: actions/github-script@v6
         with:
-          github-token: ${{secrets.GH_SVC_TOKEN}}
           script: |
             const files = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
@@ -121,7 +115,6 @@ jobs:
       registry_src: registry-src
       registry_dest: registry-dest
       docker_context: ${{matrix.docker_context}}
-    secrets: inherit
 
   promote:
     needs: [build-matrix, build]
