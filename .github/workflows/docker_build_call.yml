@@ -23,31 +23,12 @@ on:
         description: The context directory for the docker build
         type: string
         required: true
-    outputs:
-      image:
-        description: The full image name including registry/name/tag
-        value: ${{jobs.docker-build.outputs.IMAGE}}
-      targets:
-        description: The targets regsitries where images will be promoted
-        value: ${{ fromJSON(jobs.docker-build.outputs.TARGETS) }}
-      name:
-        description: The name of the image
-        value: ${{jobs.docker-build.outputs.NAME}}
-      tag:
-        description: The image tag
-        value: ${{jobs.docker-build.outputs.TAG}}
-
 
 jobs:
   docker-build:
     name: ${{inputs.docker_context}}
     runs-on: "${{inputs.runs_on}}"
     environment: ${{inputs.gh_env}}
-    outputs:
-      image: ${{steps.image.outputs.IMAGE}}
-      targets: ${{steps.image.outputs.TARETS}}
-      name: ${{steps.image.outputs.NAME}}
-      tag: ${{steps.image.outputs.TAG}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

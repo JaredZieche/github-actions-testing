@@ -95,7 +95,7 @@ jobs:
                 })
               }
             }
-
+            console.log(matrix)
             core.setOutput('docker_context', dockerContext)
             core.setOutput('matrix', matrix)
             await core.summary
@@ -118,7 +118,7 @@ jobs:
       docker_context: ${{matrix.docker_context}}
 
   promote:
-    needs: [build-matrix, build]
+    needs: [build-matrix]
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
