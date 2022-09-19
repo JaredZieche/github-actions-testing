@@ -37,6 +37,7 @@ try {
   // const globs = await globber.glob()
   // console.log(globs)
   const dirs = []
+  const newdirs = []
   for (const pr of prs) {
     // console.log(pr.number)
     const files = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/files', {
@@ -46,28 +47,33 @@ try {
     })
     const filenames = files.data.values()
     for (let elements of filenames) {
-      if (elements.filename.match(/.*src\/docker\/.*\/.*/)) {
+      if (elements.filename.match(/.*src\/docker\/.*/)) {
         // console.log(elements.filename)
         var dir = path.dirname(elements.filename)
-        dirs.push(dir)
+        dirs.push(`${dir}/Dockerfile`)
       }
     }
   }
 
-  const globPattern = dirs
+  console.log(dirs)
+  let globPattern = [...new Set(dirs)]
+  // console.log(globPattern)
   const globber = await glob.create(globPattern.join('\n'))
   // console.log(globber)
   const globs = await globber.glob()
   // console.log(globs)
-  // let newdirs = [...new Set(globs)]
-  let newdirs = globs
-  console.log(newdirs)
+  for (const file of globs) {
+    var newdir = path.dirname(file)
+    newdirs.push(newdir)
+  }
+  // console.log(newdirs)
   const buildMatrix = {};
   const promotionMatrix = {};
   buildMatrix.include = []
   promotionMatrix.include = []
   for (const dir of newdirs) {
-    const configFile = `/Users/jaredzieche/github-actions-testing/${dir}/config.json`
+    // console.log(dir)
+    const configFile = `${dir}/config.json`
     // console.log(configFile)
     const config = fs.readFileSync(configFile, 'utf8')
     // console.log(config)
@@ -97,10 +103,10 @@ try {
       }
     }
   }
-  console.log(buildMatrix)
-  console.log(promotionMatrix)
-  const buildMatrixYaml = yaml.dump(buildMatrix)
-  console.log(buildMatrixYaml)
+  // console.log(buildMatrix)
+  // console.log(promotionMatrix)
+  // const buildMatrixYaml = yaml.dump(buildMatrix)
+  // console.log(buildMatrixYaml)
 
 }
 
