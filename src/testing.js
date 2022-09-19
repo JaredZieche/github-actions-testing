@@ -15,6 +15,7 @@ const octokit = new Octokit({
 // const yaml = new Yaml();
 // const fs = new Fs();
 
+
 try {
   const open_prs = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
     owner: 'jaredzieche',
@@ -37,7 +38,7 @@ try {
   // console.log(globs)
   const dirs = []
   for (const pr of prs) {
-    console.log(pr.number)
+    // console.log(pr.number)
     const files = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/files', {
       owner: 'jaredzieche',
       repo: 'github-actions-testing',
@@ -45,36 +46,60 @@ try {
     })
     const filenames = files.data.values()
     for (let elements of filenames) {
-      if (elements.filename.match(/.*src\/.*/)) {
-        console.log(elements.filename)
+      if (elements.filename.match(/.*src\/docker\/.*/)) {
+        // console.log(elements.filename)
         var dirname = path.dirname(elements.filename)
-        dirs.push(dirname)
+        var globber = await glob.create(`${dirname}/Dockerfile`)
+        var glob = await globber.glob()
+        var dockerDir = path.dirname(glob)
+        dirs.push(dockerDir)
       }
     }
   }
 
   let newdirs = [...new Set(dirs)]
-  console.log(newdirs)
-  const matrix = {};
-  matrix.include = []
+  // console.log(newdirs)
+  const buildMatrix = {};
+  const promotionMatrix = {};
+  buildMatrix.include = []
+  promotionMatrix.include = []
   for (const dir of newdirs) {
     const configFile = `/Users/jaredzieche/github-actions-testing/${dir}/config.json`
-    console.log(configFile)
+    // console.log(configFile)
     const config = fs.readFileSync(configFile, 'utf8')
-    console.log(config)
+    // console.log(config)
     let obj = JSON.parse(config)
-    for ( const target of obj.targets) {
-      matrix.include.push({
-        name: dir,
-        targets: target,
-        image: `${obj.image["name"]}:${obj.image["tag"]}`
-      })
+    const mapFile = fs.readFileSync('/Users/jaredzieche/github-actions-testing/src/docker/config.json', 'utf8')
+    const registryMap = JSON.parse(mapFile)
+    for (const target of obj.targets) {
+      var ghEnv = Object.entries(registryMap)
+      // console.log(ghEnv)
+      for (const [key,value] of Object.entries(registryMap)) {
+        for (var t of value) {
+          if (t.includes(target)) {
+            let gh = key
+            // console.log(key)
+            buildMatrix.include.push({
+              name: dir,
+              image: `${obj.image["name"]}:${obj.image["tag"]}`
+            })
+            promotionMatrix.include.push({
+              name: dir,
+              env: gh,
+              targets: target,
+              image: `${obj.image["name"]}:${obj.image["tag"]}`
+            })
+          }
+        }
+      }
     }
-    // matrix.include.push(`"targets": "${obj.targets}" }`)
   }
-  console.log(matrix)
-  const matrixYaml = yaml.dump(matrix)
-  console.log(matrixYaml)
+  console.log(buildMatrix)
+  console.log(promotionMatrix)
+  const buildMatrixYaml = yaml.dump(buildMatrix)
+  console.log(buildMatrixYaml)
+
+}
 
     // console.log(files)
     // for (const file of files.data) {
@@ -93,7 +118,6 @@ try {
     //     console.log('matched some files')
     //   }
     // }
-}
 
 catch (error) {
   console.log(`${error.status}: ${error.response}`)

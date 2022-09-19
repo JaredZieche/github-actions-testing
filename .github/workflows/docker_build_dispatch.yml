@@ -87,14 +87,24 @@ jobs:
               const config = fs.readFileSync(configFile, 'utf8')
               console.log(config)
               const obj = JSON.parse(config)
-              for ( const target of obj.targets) {
-                matrix.include.push({
-                  name: dir,
-                  targets: target,
-                  image: `${obj.image["name"]}:${obj.image["tag"]}`
-                })
+              const mapFile = fs.readFileSync('./src/docker/config.json', 'utf8')
+              const registryMap = JSON.parse(mapFile)
+              for (const target of obj.targets) {
+                for (const [key,value] of Object.entries(registryMap)) {
+                  for (var registry of value) {
+                    if (registry.includes(target)) {
+                      let ghEnv = key
+                      console.log(key)
+                      matrix.include.push({
+                        name: dir,
+                        env: ghEnv,
+                        targets: target,
+                        image: `${obj.image["name"]}:${obj.image["tag"]}`
+                      })
+                    }
+                  }
+                }
               }
-            }
             console.log(matrix)
             core.setOutput('docker_context', dockerContext)
             core.setOutput('matrix', matrix)
