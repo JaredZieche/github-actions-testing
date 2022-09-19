@@ -46,20 +46,21 @@ try {
     })
     const filenames = files.data.values()
     for (let elements of filenames) {
-      if (elements.filename.match(/.*src\/docker\/.*\/.*\//)) {
+      if (elements.filename.match(/.*src\/docker\/.*\/.*/)) {
         // console.log(elements.filename)
-        var dirname = path.dirname(elements.filename)
-        var globber = await glob.create(`${dirname}/Dockerfile`)
-        var globs = await globber.glob()
-        var dockerDir = path.dirname(globs)
-        dirs.push(dockerDir)
-        console.log(dirs)
-        continue
+        var dir = path.dirname(elements.filename)
+        dirs.push(dir)
       }
     }
   }
 
-  let newdirs = [...new Set(dirs)]
+  const globPattern = dirs
+  const globber = await glob.create(globPattern.join('\n'))
+  // console.log(globber)
+  const globs = await globber.glob()
+  // console.log(globs)
+  // let newdirs = [...new Set(globs)]
+  let newdirs = globs
   console.log(newdirs)
   const buildMatrix = {};
   const promotionMatrix = {};
