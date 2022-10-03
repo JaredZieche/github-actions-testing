@@ -26,6 +26,8 @@ jobs:
       - name: step tests
         id: step4
         env:
-          STDOUT: ${{ join(steps.step2.outputs.*, ' ') }}
+          STDOUT: ${{ join(steps.step2.*, '\n') }}
         run: |
-          echo $STDOUT
+          for i in $STDOUT; do
+            echo $i
+          done
