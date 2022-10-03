@@ -25,9 +25,6 @@ jobs:
 
       - name: step tests
         id: step4
-        env:
-          STEP_ARRAY: ${{steps.*}}
         run: |
-          for STEP in "${!STEPARRAY[@]}"; do
-            echo ${STEP[name]}
-          done
+          echo ${{steps.*}}
+          echo ${{steps.*.name}}
