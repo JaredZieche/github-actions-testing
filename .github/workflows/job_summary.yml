@@ -14,8 +14,7 @@ jobs:
       - name: make a summary
         id: step2
         run: |
-          echo '### Hello world! :rocket:' >> $GITHUB_STEP_SUMMARY
-          ./job_summary.sh
+          echo "testing"
 
       - name: make a summary
         id: step3
@@ -27,7 +26,7 @@ jobs:
         uses: actions/github-script@v6
         id: step4
         env:
-          STDOUT: "${{ steps.step2.outputs.outcome }}"
+          STDOUT: "${{ steps.step2.outputs.stdout }}"
         with:
           script: |
             const stdout = `${process.env.STDOUT}`
