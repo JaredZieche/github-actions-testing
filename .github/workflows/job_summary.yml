@@ -23,11 +23,8 @@ jobs:
           ./job_summary.sh
 
       - name: step tests
-        uses: actions/github-script@v6
         id: step4
         env:
-          STDOUT: "${{ steps.step2.outputs.stdout }}"
-        with:
-          script: |
-            const stdout = `${process.env.STDOUT}`
-            console.log(stdout)
+          STDOUT: ${{ join(steps.step2.*), '\n' }}
+        run: |
+          echo $STDOUT
