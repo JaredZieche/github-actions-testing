@@ -27,4 +27,6 @@ jobs:
         id: step4
         run: |
           echo ${{steps.*}}
-          echo ${{steps.*.name}}
+          for x in ${{steps.*.name}}; do
+            echo $x
+          done
