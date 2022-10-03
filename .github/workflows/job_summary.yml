@@ -26,4 +26,4 @@ jobs:
       - name: step tests
         id: step4
         run: |
-          echo ${{steps.step1.name}}
+          echo ${{steps.step1.stdout}}
