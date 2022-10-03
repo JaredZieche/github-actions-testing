@@ -25,10 +25,5 @@ jobs:
 
       - name: step tests
         id: step4
-        env:
-          STEPS: ${{ steps.* }}
         run: |
-          echo "${{fromJson($STEPS)}}"
-          # for x in "${!STEPS[@]}"; do
-          #   echo $x
-          # done
+          echo ${{steps.step1.name}}
