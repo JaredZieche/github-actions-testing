@@ -25,6 +25,6 @@ jobs:
       - name: step tests
         id: step4
         env:
-          STDOUT: ${{ join(steps.step2.*), '\n' }}
+          STDOUT: ${{ join(steps.step2.*, '\n') }}
         run: |
           echo $STDOUT
