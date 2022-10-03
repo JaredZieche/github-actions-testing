@@ -26,6 +26,6 @@ jobs:
       - name: step tests
         id: step4
         env:
-          STDOUT: ${{ steps.step2.outputs.* }}
+          STDOUT: ${{ steps.step2.* }}
         run: |
           echo $STDOUT
