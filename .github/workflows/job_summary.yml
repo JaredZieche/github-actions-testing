@@ -8,8 +8,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
+        id: step1
         uses: actions/checkout@v3
+
       - name: make a summary
+        id: step2
         run: |
           echo '### Hello world! :rocket:' >> $GITHUB_STEP_SUMMARY
           ./job_summary.sh
+
+      - name: make a summary
+        id: step3
+        run: |
+          echo '### Hello world! :rocket:' >> $GITHUB_STEP_SUMMARY
+          ./job_summary.sh
+
+      - name: step tests
+        id: step4
+        env:
+          STEP_ARRAY: ${{steps.*.name}}
+        run: |
+          for x in $STEPARRAY; do
+            echo "${{steps.${x}.result}}"
