@@ -17,6 +17,16 @@ const octokit = new Octokit({
 
 
 try {
+  const response = await octokit.rest.repos.compareCommitsWithBasehead({
+    basehead: 'main...feature/matrix-testing',
+    owner: 'jaredzieche',
+    repo: 'github-actions-testing'
+  });
+  const commitfiles = response.data.files
+  for (const file of commitfiles) {
+    console.log(file.filename)
+  }
+
   const open_prs = await octokit.request('GET /repos/{owner}/{repo}/pulls', {
     owner: 'jaredzieche',
     repo: 'github-actions-testing',
@@ -45,7 +55,8 @@ try {
       repo: 'github-actions-testing',
       pull_number: pr.number
     })
-    const filenames = files.data.values()
+    const filenames = files.data.values.name
+    // const filenames = files.data.values()
     for (let elements of filenames) {
       if (elements.filename.match(/.*src\/docker\/.*/)) {
         // console.log(elements.filename)
@@ -55,7 +66,7 @@ try {
     }
   }
 
-  console.log(dirs)
+  // console.log(dirs)
   let globPattern = [...new Set(dirs)]
   // console.log(globPattern)
   const globber = await glob.create(globPattern.join('\n'))
@@ -103,6 +114,8 @@ try {
       }
     }
   }
+  console.log(buildMatrix)
+  console.log(images)
   // console.log(buildMatrix)
   // console.log(promotionMatrix)
   // const buildMatrixYaml = yaml.dump(buildMatrix)
