@@ -1,0 +1,39 @@
+name: docker promotion call
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: which runner labels to target
+        type: string
+        required: true
+      gh_env:
+        description: which github environment to use
+        type: string
+        required: true
+      registry_src:
+        description: Which registry to pull from
+        type: string
+        required: true
+      registry_dest:
+        description: Which registry to push to
+        type: string
+        required: true
+      name:
+        description: Which repo to promote
+        type: string
+        required: true
+      image:
+        description: Image tag promote
+        type: string
+        required: true
+
+jobs:
+  promote:
+    runs-on: ${{inputs.runs_on}}
+    environment: ${{inputs.gh_env}}
+    steps:
+      - name: Set outputs
+        id: image
+        run: |
+          echo "${{ inputs.name }} ${{ inputs.image }} ${{ inputs.registry_dest }}"

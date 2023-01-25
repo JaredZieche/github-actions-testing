@@ -1,0 +1,48 @@
+global:
+  deployEnv: sbx
+  legacyEnv: sbx8
+  domains:
+    standard: sbx.bip.va.gov
+    legacy: sbx8.bip.va.gov
+
+projects:
+  targetRevision: 1.5.0
+
+apps:
+  targetRevision: 1.5.0
+
+argocd:
+  server:
+    rbacConfig:
+      policy.csv: |
+        g, admins, role:admin
+        g, sbx-admins, role:admin
+    config: # This root CA has both the root VA cert (#1) and the Digicert (#2) so both scenarios should work
+      rootCA: |
+        {{- if .Values.global.publicIdentityProviderEnabled }}
+        -----BEGIN CERTIFICATE-----
+        -----END CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
+        -----END CERTIFICATE-----
+        {{- else }}
+        -----BEGIN CERTIFICATE-----
+        -----END CERTIFICATE-----
+        {{- end }}
+      oidc.config: |
+        name: Dex
+        issuer: {{ ternary .Values.global.publicIdentityProviderIssuerUrl  (print "https://dex." (include "argocd-bootstrap.primary_domain" .)) .Values.global.publicIdentityProviderEnabled }}
+        clientID: argocd
+        clientSecret: $argocd-dex-client-secret:argocd-dex-client-secret
+
+        # Optional set of OIDC scopes to request. If omitted, defaults to: ["openid", "profile", "email", "groups"]
+        requestedScopes: ["openid", "profile", "email", "offline_access", "groups"]
+        rootCA: |
+          {{- if .Values.global.publicIdentityProviderEnabled }}
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          {{- else }}
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          {{- end }}

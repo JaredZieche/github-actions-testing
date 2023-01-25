@@ -1,0 +1,41 @@
+name: docker build call
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: which runner labels to target
+        type: string
+        required: true
+      gh_env:
+        description: which github environment to use
+        type: string
+        required: true
+      registry_src:
+        description: Which registry to pull from
+        type: string
+        required: true
+      registry_dest:
+        description: Which registry to push to
+        type: string
+        required: true
+      docker_context:
+        description: The context directory for the docker build
+        type: string
+        required: true
+
+jobs:
+  docker-build:
+    name: ${{inputs.docker_context}}
+    runs-on: "${{inputs.runs_on}}"
+    environment: ${{inputs.gh_env}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set outputs
+        id: image
+        working-directory: ${{inputs.docker_context}}
+        run: |
+          echo ${{inputs.docker_context}}
+

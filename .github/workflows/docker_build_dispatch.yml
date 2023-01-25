@@ -1,0 +1,150 @@
+name: docker dispatch trigger
+
+on:
+  pull_request:
+    paths:
+      - src/docker/**
+  workflow_dispatch:
+    inputs:
+      runs_on:
+        description: which runner labels to target
+        type: string
+        required: true
+      gh_env:
+        description: which github environment to use
+        type: string
+        required: true
+      registry_src:
+        description: Which registry to pull from
+        type: string
+        required: true
+      registry_dest:
+        description: Which registry to push to
+        type: string
+        required: true
+      repo_src:
+        description: Which repo to pull from
+        type: string
+        required: true
+      repo_dest:
+        description: Which repo to push to
+        type: string
+        required: true
+      tag_src:
+        description: Image tag to pull
+        type: string
+        required: true
+      tag_dest:
+        description: Image tag to push
+        type: string
+        required: true
+      docker_context:
+        description: The context directory for the docker build
+        type: string
+        required: true
+
+jobs:
+  build-matrix:
+    runs-on: ubuntu-latest
+    environment: test
+    outputs:
+      docker_context: ${{steps.paths.outputs.docker_context}}
+      matrix: ${{steps.paths.outputs.matrix}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: get changed paths
+        id: paths
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: "${{github.event.pull_request.number}}"
+            })
+            const filenames = files.data.values()
+            const dirs = []
+            var path = require('path')
+            for (let elements of filenames) {
+              if (elements.filename.match(/.*docker\/.*/)) {
+                console.log('Changed files:')
+                console.log(elements.filename)
+                var dirname = path.dirname(elements.filename)
+                dirs.push(dirname)
+              }
+            }
+            var fs = require('fs')
+            const dockerContext = [...new Set(dirs)]
+            console.log('Changed contexts:')
+            console.log(dockerContext)
+            const matrix = {};
+            matrix.include = []
+            for (const dir of dockerContext) {
+              console.log(dir)
+              const configFile = `${dir}/config.json`
+              const config = fs.readFileSync(configFile, 'utf8')
+              console.log(config)
+              const obj = JSON.parse(config)
+              const mapFile = fs.readFileSync('./src/docker/config.json', 'utf8')
+              const registryMap = JSON.parse(mapFile)
+              for (const target of obj.targets) {
+                for (const [key,value] of Object.entries(registryMap)) {
+                  for (var registry of value) {
+                    if (registry.includes(target)) {
+                      let ghEnv = key
+                      console.log(key)
+                      matrix.include.push({
+                        name: dir,
+                        env: ghEnv,
+                        targets: target,
+                        image: `${obj.image["name"]}:${obj.image["tag"]}`
+                      })
+                    }
+                  }
+                }
+              }
+            console.log(matrix)
+            core.setOutput('docker_context', dockerContext)
+            core.setOutput('matrix', matrix)
+            const array = matrix.include
+            console.log(array)
+            const cells = []
+            cells.push([{data: 'Context', header: true}, {data: 'Targets', header: true}, {data: 'Image', header: true}])
+            for (let elements of array) {
+              cells.push([ elements.name, elements.targets, elements.image ])
+            }
+            console.log(cells)
+            await core.summary
+              .addHeading('Build-Matrix')
+              .addTable(cells)
+              .write()
+
+  build:
+    needs: build-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        docker_context: ${{ fromJSON(needs.build-matrix.outputs.docker_context) }}
+    uses: ./.github/workflows/docker_build_call.yml
+    with:
+      runs_on: ubuntu-latest
+      gh_env: test
+      registry_src: registry-src
+      registry_dest: registry-dest
+      docker_context: ${{matrix.docker_context}}
+
+  promote:
+    needs: [build-matrix, build]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
+    uses: ./.github/workflows/docker_promotion_call.yml
+    with:
+      runs_on: ubuntu-latest
+      gh_env: test
+      name: ${{ matrix.name }}
+      image: ${{ matrix.image }}
+      registry_src: registry-src
+      registry_dest: ${{ matrix.target }}

@@ -8,8 +8,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
+        id: step1
         uses: actions/checkout@v3
+
       - name: make a summary
+        id: step2
+        run: |
+          echo "testing"
+        continue-on-error: true
+
+      - name: make a summary
+        id: step3
         run: |
           echo '### Hello world! :rocket:' >> $GITHUB_STEP_SUMMARY
           ./job_summary.sh
+
+      - name: step tests
+        id: step4
+        env:
+          STDOUT: ${{ join(steps.*, ' ') }}
+        run: |
+          for i in $STDOUT; do
+            echo $i
+          done

@@ -1,0 +1,15 @@
+{
+    "dev": [
+        "registry1",
+        "registry2",
+        "registry3"
+    ],
+    "stage": [
+        "registry1",
+        "registry2"
+    ],
+    "prod": [
+        "registry1",
+        "registry2"
+    ]
+}
