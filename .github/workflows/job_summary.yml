@@ -13,7 +13,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: echo vars
-        run: echo "${{ join(vars.LIST, ', ') }}"
+        run: |
+          echo $LIST_VAR | tr -d \n
+        env:
+          LIST_VAR: ${{ vars.LIST }}
 
       - name: make a summary
         id: step2
