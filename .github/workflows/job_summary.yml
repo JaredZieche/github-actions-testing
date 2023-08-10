@@ -14,7 +14,7 @@ jobs:
 
       - name: echo vars
         run: |
-          echo $(echo ${LIST_VAR})
+          echo ${LIST_VAR} | tr -d '\n'
         env:
           LIST_VAR: >-
             ${{ vars.LIST }}
