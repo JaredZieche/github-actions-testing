@@ -6,10 +6,14 @@ on:
 jobs:
   summary:
     runs-on: ubuntu-latest
+    environment: test
     steps:
       - name: checkout
         id: step1
         uses: actions/checkout@v3
+
+      - name: echo vars
+        run: echo ${{ vars.LIST }}
 
       - name: make a summary
         id: step2
