@@ -14,9 +14,9 @@ jobs:
 
       - name: echo vars
         run: |
-          echo ${LIST_VAR} | tr -d '\n'
+          echo $LIST_VAR | tr -d '\n'
         env:
-          LIST_VAR: ${{ fromJson(vars.LIST) }}
+          LIST_VAR: ${{ toJSON(vars.LIST) }}
 
       - name: make a summary
         id: step2
