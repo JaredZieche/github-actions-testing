@@ -15,7 +15,7 @@ jobs:
       - name: echo vars
         run: echo $ENV_LIST
         env:
-          ENV_LIST: ${{ join(vars.LIST, ', ') }}
+          ENV_LIST: ${{ join(vars.LIST.*, ', ') }}
 
       - name: make a summary
         id: step2
