@@ -16,7 +16,8 @@ jobs:
         run: |
           echo $(echo ${LIST_VAR})
         env:
-          LIST_VAR: ${{ vars.LIST }}
+          LIST_VAR: >-
+            ${{ vars.LIST }}
 
       - name: make a summary
         id: step2
