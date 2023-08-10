@@ -16,8 +16,7 @@ jobs:
         run: |
           echo ${LIST_VAR} | tr -d '\n'
         env:
-          LIST_VAR: >-
-            ${{ vars.LIST }}
+          LIST_VAR: ${{ fromJson(vars.LIST) }}
 
       - name: make a summary
         id: step2
