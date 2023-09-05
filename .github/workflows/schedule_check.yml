@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(fromJson('["push", "pull_request", "schedule"]'), github.event_name)
     outputs:
-      packer_dir: ${{ github.event_name == 'schedule' && steps.packer-schedule.outputs.packer_dir || steps.packer-dir.outputs.packer_dir }}
+      packer_dir: ${{ steps.packer-schedule.outputs.packer_dir }}
       build_count: ${{ steps.packer-dir.outputs.build_count }}
     steps:
       - name: Checkout repository
