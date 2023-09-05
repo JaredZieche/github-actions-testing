@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(fromJson('["push", "pull_request", "schedule"]'), github.event_name)
     outputs:
-      packer_dir: ${{ steps.packer-schedule.outputs.packer_dir }}
+      packer_dir: ${{ steps.schedule-check.outputs.packer_dir }}
       build_count: ${{ steps.packer-dir.outputs.build_count }}
     steps:
       - name: Checkout repository
@@ -26,6 +26,7 @@ jobs:
           src/utils/packer_dirs.sh
 
       - name: stepcheck
+        id: schedule-check
         run: |
           echo $FILES
           packer_dir=$(echo "${FILES}" | jq -r 'to_entries | map(select(.value | match("src/packer"))) | map(.value) | .[]' | cut -d'/' -f 1-3 | uniq)
