@@ -1,0 +1,37 @@
+name: schedule check
+on:
+  schedule:
+    - cron: '0/5 * * * *'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    if: contains(fromJson('["push", "pull_request", "schedule"]'), github.event_name)
+    outputs:
+      packer_dir: ${{ github.event_name == 'schedule' && steps.packer-schedule.outputs.packer_dir || steps.packer-dir.outputs.packer_dir }}
+      build_count: ${{ steps.packer-dir.outputs.build_count }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get all packer directories for a scheduled run
+        id: packer-schedule
+        if: contains(fromJson('["schedule"]'), github.event_name)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          packer_files=$(find src/packer -type f -name '*pkr.hcl')
+          echo $packer_files
+          echo "FILES=$(printf '%s\n' "${packer_files[@]}" | jq -R . | jq -sc .)" >> $GITHUB_ENV
+          src/utils/packer_dirs.sh
+
+  build-scheduled:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.packer_dir) }}
+    steps:
+      - name: matrix
+        run: |
+          echo ${{ matrix.packer_dirs }}
